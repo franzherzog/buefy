@@ -1,6 +1,7 @@
 <template>
     <div class="autocomplete control" :class="{'is-expanded': expanded}">
         <b-input
+            required
             v-model="newValue"
             ref="input"
             :size="size"
@@ -76,7 +77,10 @@
             },
             keepFirst: Boolean,
             clearOnSelect: Boolean,
-            openOnFocus: Boolean
+            openOnFocus: {
+                type: Boolean,
+                default: true
+            }
         },
         data() {
             return {
@@ -196,13 +200,16 @@
              */
             setSelected(option, closeDropdown = true) {
                 if (option === undefined) return
-
                 this.selected = option
                 this.$emit('select', this.selected)
                 if (this.selected !== null) {
                     this.newValue = this.clearOnSelect ? '' : this.getValue(this.selected)
                 }
-                closeDropdown && this.$nextTick(() => { this.isActive = false })
+                this.$refs.input.$el.children[0].focus()
+                closeDropdown && this.$nextTick(() => {
+                    this.$refs.input.$el.children[0].blur()
+                    this.isActive = false
+                })
             },
 
             /**
